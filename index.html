@@ -52,49 +52,83 @@
 
             <!-- Page 1: Gallery -->
             <div id="page-books" class="page">
-                <h1 class="title">Ethics Curation</h1>
-                <div class="gallery-container">
-                    <!-- Dynamic Items via JS -->
+                <h1 class="title">생각을 여는 책들</h1>
+                <div class="gallery-wrapper">
+                    <button class="nav-arrow left" id="scroll-left"><i class="fas fa-chevron-left"></i></button>
+                    <div class="gallery-container">
+                        <!-- Dynamic Items via JS -->
+                    </div>
+                    <button class="nav-arrow right" id="scroll-right"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
 
             <!-- Page 2: Notes -->
             <div id="page-notes" class="page">
-                <h1 class="title">Forest of Sentences</h1>
+                <h1 class="title">내 마음을 울린 한 문장</h1>
                 <div class="input-bar">
-                    <input type="text" id="note-input" placeholder="인상 깊은 문장을 기록하세요...">
+                    <input type="text" id="note-input" placeholder="인상 깊은 문장을 기록하세요..." style="flex: 2;">
+                    <input type="text" id="note-source-input" placeholder="출처 (책 제목)"
+                        style="flex: 1; border-left: 1px solid rgba(255,255,255,0.1);">
                     <button id="note-add-btn">기록하기</button>
                 </div>
                 <div id="notes-grid" class="masonry-grid"></div>
             </div>
 
-            <!-- Page 3: Chat (+ Balance Game) -->
-            <div id="page-talk" class="page" style="justify-content: center; align-items: center;">
-                <h1 class="title" style="margin-bottom: 20px;">Book Talk</h1>
-                <div class="chat-container">
+            <!-- Page 3: Book Talk (Debate) -->
+            <div id="page-talk" class="page">
+                <h1 class="title" style="margin-bottom: 10px;">함께 나누는 이야기</h1>
+                <p class="page-subtitle" style="text-align: center; color: #a0aec0; margin-bottom: 40px;">당신의 선택과 그 이유는
+                    무엇인가요?</p>
 
-                    <!-- Balance Game Section -->
-                    <div class="balance-game-box">
-                        <h3 class="balance-title">⚖️ 오늘의 밸런스 게임</h3>
-                        <p class="balance-question">"거짓말은 어떤 상황에서도 나쁜가?"</p>
-                        <div class="balance-options">
-                            <button class="vote-btn" onclick="app.vote('yes')">⭕ 절대 안 된다</button>
-                            <button class="vote-btn" onclick="app.vote('no')">❌ 때론 필요하다</button>
+                <div class="talk-container">
+                    <!-- Left: Topic Card -->
+                    <div class="topic-section">
+                        <span class="topic-tag">Today's Topic</span>
+                        <h2 class="topic-title">기억 전달자 속 '선의의 거짓말'</h2>
+                        <p class="topic-summary">완벽한 사회를 유지하기 위해 통제된 거짓말이 허용된다면, 그것은 정당한가요?</p>
+
+                        <div class="topic-quote-box">
+                            <p>"아버지는 아이를 '임무 해제' 시키면서도 평온했습니다. 그는 자신이 살인하고 있다는 사실조차 몰랐기 때문입니다."</p>
                         </div>
-                        <div class="vote-result-bar" id="vote-bar" style="width:0; opacity:0;"></div>
+
+                        <p class="topic-question-main">무지 상태에서의 악행은 죄가 될 수 있을까요?</p>
+
+                        <!-- Balance Vote Buttons -->
+                        <div class="balance-vote-container">
+                            <button class="vote-btn btn-a" id="vote-a">죄가 된다</button>
+                            <span class="vs-text">VS</span>
+                            <button class="vote-btn btn-b" id="vote-b">죄가 아니다</button>
+                        </div>
+                        <div id="vote-bar" class="vote-bar-hidden">
+                            <div id="bar-fill-a" style="width: 50%;"></div>
+                            <span id="vote-count-text">50% : 50%</span>
+                        </div>
                     </div>
 
-                    <div id="chat-feed" class="chat-feed"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="의견을 입력하세요...">
-                        <button id="chat-send">전송</button>
+                    <!-- Right: Opinion Feed & Input -->
+                    <div class="opinion-section">
+                        <div id="opinion-feed" class="opinion-feed">
+                            <!-- Opinions will be injected here -->
+                            <div class="opinion-card">
+                                <p class="opinion-text">고통이 없으면 행복도 없다고 생각해요. 진실을 알 권리가 우선입니다.</p>
+                                <div class="opinion-footer">
+                                    <span class="opinion-author">Demo User</span>
+                                    <span class="opinion-time">방금 전</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="opinion-input-area">
+                            <textarea id="opinion-input" placeholder="자신의 생각을 자유롭게 적어보세요..."></textarea>
+                            <button id="opinion-submit-btn">의견 남기기</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Page 4: Relay Story -->
             <div id="page-relay" class="page">
-                <h1 class="title">Relay Story</h1>
+                <h1 class="title">우리가 만드는 이야기</h1>
                 <div class="relay-container">
                     <div id="story-board" class="story-board">
                         <p class="story-start">📌 첫 문장: 어느 날, 도서관의 책 속 주인공들이 모두 현실로 튀어나왔다...</p>

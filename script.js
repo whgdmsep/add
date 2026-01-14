@@ -12,8 +12,8 @@ const app = {
             "어느 날, 도서관의 책 속 주인공들이 모두 현실로 튀어나왔다..."
         ],
         notes: [
-            "정직은 가장 확실한 자본이다. - 에머슨",
-            "남에게 대접받고자 하는 대로 남을 대접하라."
+            { text: "정직은 가장 확실한 자본이다.", source: "에머슨, 자기신뢰" },
+            { text: "남에게 대접받고자 하는 대로 남을 대접하라.", source: "황금률" }
         ],
         chatHistory: [
             { user: 'bot', text: '어서오세요! 오늘의 밸런스 게임 투표하셨나요? 🗳️' }
@@ -35,17 +35,22 @@ const app = {
 
         // Gallery
         this.galleryContainer = document.querySelector('.gallery-container');
+        this.scrollLeftBtn = document.getElementById('scroll-left');
+        this.scrollRightBtn = document.getElementById('scroll-right');
 
         // Notes
         this.noteInput = document.getElementById('note-input');
+        this.noteSourceInput = document.getElementById('note-source-input'); // New ID
         this.noteAddBtn = document.getElementById('note-add-btn');
         this.notesGrid = document.getElementById('notes-grid');
 
-        // Chat
-        this.chatInput = document.getElementById('chat-input');
-        this.chatSendBtn = document.getElementById('chat-send');
-        this.chatFeed = document.getElementById('chat-feed');
+        // Opinion & Vote
+        this.voteBtns = document.querySelectorAll('.vote-btn');
         this.voteBar = document.getElementById('vote-bar');
+
+        this.opinionInput = document.getElementById('opinion-input');
+        this.opinionSubmitBtn = document.getElementById('opinion-submit-btn');
+        this.opinionFeed = document.getElementById('opinion-feed');
 
         // Relay Story
         this.relayInput = document.getElementById('relay-input');
@@ -70,19 +75,34 @@ const app = {
             });
         }
 
+        // Gallery Scroll
+        if (this.scrollLeftBtn && this.galleryContainer) {
+            this.scrollLeftBtn.addEventListener('click', () => {
+                this.galleryContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+        }
+        if (this.scrollRightBtn && this.galleryContainer) {
+            this.scrollRightBtn.addEventListener('click', () => {
+                this.galleryContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        }
+
         // Notes
         if (this.noteAddBtn) {
             this.noteAddBtn.addEventListener('click', () => this.addNote());
         }
 
-        // Chat
-        if (this.chatSendBtn) {
-            this.chatSendBtn.addEventListener('click', () => this.sendMessage());
+        // Vote
+        this.voteBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleVote(e.target));
+        });
+
+        // Opinion Submit
+        if (this.opinionSubmitBtn) {
+            this.opinionSubmitBtn.addEventListener('click', () => this.addOpinion());
         }
-        if (this.chatInput) {
-            this.chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') this.sendMessage();
-            });
+        if (this.opinionInput) {
+            // Optional: submit on Ctrl+Enter? Let's just keep button for textarea
         }
 
         // Relay Story
@@ -115,7 +135,7 @@ const app = {
         this.renderBooks();
         this.renderNotes();
         this.renderRelay();
-        this.renderChat();
+        // this.renderChat(); -> No longer needed to init render, opinions are static + dynamic
     },
 
     /* --- Feature: Recommended Books --- */
@@ -138,18 +158,19 @@ const app = {
             { title: "꾸뻬 씨의 행복 여행", author: "프랑수아 를로르", category: "행복/가치", desc: "진정한 행복이란 무엇일까? 전 세계를 여행하며 얻은 배움들", color: "#FFCC80" },
 
             { title: "우아한 거짓말", author: "김려령", category: "학교폭력/가족", desc: "무심코 던진 말이 남긴 상처, 그리고 남겨진 사람들의 용서와 화해", color: "#EF9A9A" },
-            { title: "시간을 파는 상점", author: "김선영", category: "시간/철학", desc: "시간의 의미를 찾아가는 미스터리한 상점의 이야기", color: "#CE93D8" }
+            { title: "시간을 파는 상점", author: "김선영", category: "시간/철학", desc: "시간의 의미를 찾아가는 미스터리한 상점의 이야기", color: "#CE93D8" },
+            { title: "오베라는 남자", author: "프레드릭 배크만", category: "이웃/연대", desc: "까칠한 원칙주의자 오베가 성가신 이웃들과 얽히며 발견하는 삶의 온기", color: "#FFAB91" }
         ];
 
         if (!this.galleryContainer) return;
         this.galleryContainer.innerHTML = books.map(book => `
             <div class="book-card">
-                <div class="book-img" style="background-color: ${book.color}; display:flex; align-items:center; justify-content:center; font-size:3rem;">📖</div>
+                <div class="book-img" style="background-color: ${book.color}; font-size:2.5rem;">📖</div>
                 <div class="book-info">
-                    <span style="font-size:0.8rem; color:#888; text-transform:uppercase; letter-spacing:1px;">${book.category}</span>
-                    <h3 style="margin:5px 0;">${book.title}</h3>
-                    <p style="font-weight:bold; color:#555; font-size:0.9rem;">${book.author}</p>
-                    <p style="margin-top:10px; font-size:0.85rem; color:#777; line-height:1.4;">${book.desc}</p>
+                    <span>${book.category}</span>
+                    <h3>${book.title}</h3>
+                    <p class="author">${book.author}</p>
+                    <p class="desc">${book.desc}</p>
                 </div>
             </div>
         `).join('');
@@ -158,32 +179,80 @@ const app = {
     /* --- Feature: Notes (Forest of Sentences) --- */
     addNote() {
         const text = this.noteInput.value.trim();
-        if (!text) return;
-        this.state.notes.unshift(text); // Add to front
+        const source = this.noteSourceInput.value.trim(); // Get Source
+
+        if (!text) {
+            alert('문장을 입력해주세요!');
+            return;
+        }
+
+        const newNote = {
+            text: text,
+            source: source || "미상" // Default if empty
+        };
+
+        this.state.notes.unshift(newNote); // Add to front
         this.renderNotes();
         this.noteInput.value = '';
+        this.noteSourceInput.value = '';
     },
     renderNotes() {
         if (!this.notesGrid) return;
         this.notesGrid.innerHTML = this.state.notes.map(note => `
-            <div class="note-item">"${note}"</div>
+            <div class="note-item">
+                <p class="note-text">"${note.text}"</p>
+                <p class="note-source">- ${note.source}</p>
+            </div>
         `).join('');
     },
 
-    /* --- Feature: Chat + Balance Game --- */
-    sendMessage() {
-        const text = this.chatInput.value.trim();
+    /* --- Feature: Debate Vote & Opinion --- */
+    handleVote(target) {
+        if (!this.voteBar) return;
+        // Simulate Vote
+        const isA = target.id === 'vote-a';
+
+        // Show Bar
+        this.voteBar.style.display = 'block';
+
+        // Randomize slightly for realism or set fixed
+        const percentageA = isA ? 60 : 40;
+
+        // Animate
+        setTimeout(() => {
+            const barFill = document.getElementById('bar-fill-a');
+            const text = document.getElementById('vote-count-text');
+            if (barFill) barFill.style.width = percentageA + '%';
+            if (text) text.innerText = `${percentageA}% : ${100 - percentageA}%`;
+        }, 100);
+
+        // Disable buttons
+        this.voteBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'default';
+        });
+    },
+
+    addOpinion() {
+        const text = this.opinionInput.value.trim();
         if (!text) return;
 
-        // User message
-        this.addChatBubble(text, 'user');
-        this.chatInput.value = '';
+        const opinionHTML = `
+            <div class="opinion-card">
+                <p class="opinion-text">${text}</p>
+                <div class="opinion-footer">
+                    <span class="opinion-author">나 (Student)</span>
+                    <span class="opinion-time">방금 전</span>
+                </div>
+            </div>
+        `;
 
-        // Auto reply simulation
-        setTimeout(() => {
-            this.addChatBubble("좋은 의견이네요! 다른 친구들은 어떻게 생각할까요?", 'bot');
-        }, 1000);
+        this.opinionFeed.insertAdjacentHTML('afterbegin', opinionHTML);
+        this.opinionInput.value = '';
     },
+
+    /* --- Feature: Chat --- */
     addChatBubble(text, type) {
         const bubble = document.createElement('div');
         bubble.className = `bubble ${type}`;
@@ -192,15 +261,48 @@ const app = {
         this.chatFeed.scrollTop = this.chatFeed.scrollHeight;
     },
     renderChat() {
-        // Load initial history
+        if (!this.chatFeed) return;
+        this.chatFeed.innerHTML = ''; // Clear existing
         this.state.chatHistory.forEach(msg => this.addChatBubble(msg.text, msg.user));
     },
-    vote(option) {
-        alert(option === 'yes' ? "⭕ '그렇다'에 한 표 행사했습니다!" : "❌ '아니다'에 한 표 행사했습니다!");
-        // Simple visual feedback
-        if (this.voteBar) {
-            this.voteBar.style.width = '62%';
-            this.voteBar.style.opacity = '1';
+    sendChat() {
+        const text = this.chatInput.value.trim();
+        if (!text) return;
+
+        this.state.chatHistory.push({ user: 'user', text: text });
+        this.addChatBubble(text, 'user');
+        this.chatInput.value = '';
+
+        // Simulate bot response
+        setTimeout(() => {
+            const botResponse = this.getBotResponse(text);
+            this.state.chatHistory.push({ user: 'bot', text: botResponse });
+            this.addChatBubble(botResponse, 'bot');
+        }, 1000);
+    },
+    getBotResponse(userMessage) {
+        const lowerMsg = userMessage.toLowerCase();
+        if (lowerMsg.includes('안녕') || lowerMsg.includes('하이')) {
+            return '안녕하세요! 무엇을 도와드릴까요?';
+        } else if (lowerMsg.includes('고마워') || lowerMsg.includes('감사')) {
+            return '천만에요! 또 궁금한 점 있으시면 언제든지 물어보세요.';
+        } else if (lowerMsg.includes('책 추천')) {
+            return '어떤 종류의 책을 찾으시나요? 정의, 환경, AI 등 다양한 주제의 책들이 준비되어 있어요!';
+        } else if (lowerMsg.includes('윤리') || lowerMsg.includes('도덕')) {
+            return '윤리는 우리가 어떻게 살아야 할지에 대한 질문을 던지는 중요한 학문이죠. 이곳에서 다양한 관점을 탐색해보세요.';
+        } else if (lowerMsg.includes('날씨')) {
+            return '저는 날씨 정보는 알 수 없지만, 당신의 하루가 맑기를 바랍니다! ☀️';
+        } else if (lowerMsg.includes('이름')) {
+            return '저는 에틱 라이브러리 가든의 챗봇, 에티라고 합니다! 😊';
+        } else {
+            const responses = [
+                '흥미로운 질문이네요!',
+                '더 자세히 말씀해주시겠어요?',
+                '그것에 대해 함께 생각해볼까요?',
+                '좋은 의견 감사합니다!',
+                '다른 질문은 없으신가요?'
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
         }
     },
 
@@ -239,7 +341,13 @@ const app = {
             div.innerHTML = `${line} <span class="story-author">#익명${index + 1}</span>`;
             this.storyBoard.appendChild(div);
         });
+
+        // Auto scroll to bottom
+        setTimeout(() => {
+            this.storyBoard.scrollTop = this.storyBoard.scrollHeight;
+        }, 100);
     }
+
 };
 
 // Start
