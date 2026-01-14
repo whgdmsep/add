@@ -1,140 +1,248 @@
+/* 
+   ETHIC LIBRARY GARDEN SCRIPT
+   - Tab Navigation
+   - Dynamic Content Generation
+   - Interactive Features (Chat, Relay, Notes)
+*/
+
 const app = {
-    db: {
-        get: (k) => JSON.parse(localStorage.getItem(k) || '[]'),
-        add: (k, v) => {
-            const d = JSON.parse(localStorage.getItem(k) || '[]');
-            d.unshift(v);
-            localStorage.setItem(k, JSON.stringify(d));
-            return d;
-        }
+    state: {
+        currentPage: 'page-home', // Default: Home Intro
+        relayStory: [
+            "어느 날, 도서관의 책 속 주인공들이 모두 현실로 튀어나왔다..."
+        ],
+        notes: [
+            "정직은 가장 확실한 자본이다. - 에머슨",
+            "남에게 대접받고자 하는 대로 남을 대접하라."
+        ],
+        chatHistory: [
+            { user: 'bot', text: '어서오세요! 오늘의 밸런스 게임 투표하셨나요? 🗳️' }
+        ]
     },
 
     init() {
-        this.bindNav();
+        this.cacheDOM();
+        this.bindEvents();
+        this.render();
+    },
+
+    cacheDOM() {
+        this.navButtons = document.querySelectorAll('nav button');
+        this.pages = document.querySelectorAll('.page');
+        // this.introSection removed
+        this.appContainer = document.querySelector('.app-container');
+        this.logoBtn = document.getElementById('logo-btn');
+
+        // Gallery
+        this.galleryContainer = document.querySelector('.gallery-container');
+
+        // Notes
+        this.noteInput = document.getElementById('note-input');
+        this.noteAddBtn = document.getElementById('note-add-btn');
+        this.notesGrid = document.getElementById('notes-grid');
+
+        // Chat
+        this.chatInput = document.getElementById('chat-input');
+        this.chatSendBtn = document.getElementById('chat-send');
+        this.chatFeed = document.getElementById('chat-feed');
+        this.voteBar = document.getElementById('vote-bar');
+
+        // Relay Story
+        this.relayInput = document.getElementById('relay-input');
+        this.relayAddBtn = document.getElementById('relay-add-btn');
+        this.storyBoard = document.getElementById('story-board');
+    },
+
+    bindEvents() {
+        // Navigation
+        this.navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = e.target.getAttribute('data-target');
+                this.changePage(targetId);
+            });
+        });
+
+        // Logo click -> Home
+        if (this.logoBtn) {
+            this.logoBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.changePage('page-home');
+            });
+        }
+
+        // Notes
+        if (this.noteAddBtn) {
+            this.noteAddBtn.addEventListener('click', () => this.addNote());
+        }
+
+        // Chat
+        if (this.chatSendBtn) {
+            this.chatSendBtn.addEventListener('click', () => this.sendMessage());
+        }
+        if (this.chatInput) {
+            this.chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.sendMessage();
+            });
+        }
+
+        // Relay Story
+        if (this.relayAddBtn) {
+            this.relayAddBtn.addEventListener('click', () => this.addRelayLine());
+        }
+        if (this.relayInput) {
+            this.relayInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.addRelayLine();
+            });
+        }
+    },
+
+    changePage(targetId) {
+        // Update Nav
+        this.navButtons.forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`button[data-target="${targetId}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        // Update Page
+        this.pages.forEach(page => page.classList.remove('active'));
+        const targetPage = document.getElementById(targetId);
+        if (targetPage) targetPage.classList.add('active');
+
+        this.state.currentPage = targetId;
+    },
+
+    render() {
+        this.changePage(this.state.currentPage);
         this.renderBooks();
-        this.initSentences();
-        this.initChat();
-        this.initLetter();
+        this.renderNotes();
+        this.renderRelay();
+        this.renderChat();
     },
 
-    bindNav() {
-        const btns = document.querySelectorAll('nav button');
-        const pages = document.querySelectorAll('.page');
-        const logo = document.querySelector('.logo');
-        const introPage = document.getElementById('page-intro');
-
-        // Logic to switch pages
-        const switchPage = (targetId) => {
-            // Update buttons active state
-            btns.forEach(b => {
-                if (b.dataset.target === targetId) b.classList.add('active');
-                else b.classList.remove('active');
-            });
-
-            // Update visible page
-            pages.forEach(p => {
-                p.classList.remove('active');
-                if (p.id === targetId) p.classList.add('active');
-            });
-        };
-
-        // Nav Buttons Click
-        btns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                switchPage(btn.dataset.target);
-            });
-        });
-
-        // Logo Click -> Go to Intro
-        logo.addEventListener('click', () => {
-            btns.forEach(b => b.classList.remove('active')); // No menu active
-            pages.forEach(p => p.classList.remove('active'));
-            introPage.classList.add('active');
-        });
-    },
-
-    toast(msg) {
-        const box = document.getElementById('toast-box');
-        box.querySelector('span').innerText = msg;
-        box.classList.add('show');
-        setTimeout(() => box.classList.remove('show'), 3000);
-    },
-
-    // --- Book Data ---
+    /* --- Feature: Recommended Books --- */
     renderBooks() {
+        // 도서 데이터 (카테고리 및 설명 추가)
         const books = [
-            { num: '01', title: "죽은 시인의 사회", author: "N.H. 클라인바움", desc: "진정한 나를 찾는다는 건 어떤 의미일까?" },
-            { num: '02', title: "기억 전달자", author: "로이스 로리", desc: "고통 없는 완벽한 사회, 그 이면의 진실." },
-            { num: '03', title: "앵무새 죽이기", author: "하퍼 리", desc: "편견이라는 괴물과 싸우는 양심." },
-            { num: '04', title: "아몬드", author: "손원평", desc: "타인의 고통에 공감하는 법." },
-            { num: '05', title: "모모", author: "미하엘 엔데", desc: "시간을 훔쳐가는 회색 신사들." },
+            { title: "앵무새 죽이기", author: "하퍼 리", category: "정의/차별", desc: "편견에 맞서 양심을 지키는 변호사 아티커스의 용기 있는 이야기", color: "#C5CAE9" },
+            { title: "기억 전달자", author: "로이스 라우리", category: "자유/선택", desc: "완벽해 보이는 통제 사회, 그 속에 숨겨진 진실과 자유의 무게", color: "#B2DFDB" },
+            { title: "아몬드", author: "손원평", category: "공감/성장", desc: "감정을 느끼지 못하는 소년이 타인과 관계를 맺으며 성장하는 과정", color: "#F8BBD0" },
+            { title: "죽은 시인의 사회", author: "N.H. 클라인바움", category: "교육/자아", desc: "'카르페 디엠', 진정한 배움과 나다움을 찾아가는 학생들의 이야기", color: "#D7CCC8" },
+            { title: "원더", author: "R.J. 팔라시오", category: "편견/친절", desc: "헬멧 속에 숨었던 아이 어기, 세상 밖으로 나와 기적을 만들다", color: "#BBDEFB" },
+
+            { title: "침묵의 봄", author: "레이첼 카슨", category: "환경/생태", desc: "무분별한 살충제 사용이 가져올 재앙을 경고한 환경학의 고전", color: "#A5D6A7" },
+            { title: "고릴라는 핸드폰을 미워해", author: "박경화", category: "환경/소비", desc: "우리가 쓰는 물건 속에 숨겨진 환경 파괴의 진실과 실천 방법", color: "#E6EE9C" },
+
+            { title: "1984", author: "조지 오웰", category: "정보/인권", desc: "거대 감시 사회 빅브라더를 통해 본 정보 인권과 개인의 자유", color: "#CFD8DC" },
+            { title: "프랑켄슈타인", author: "메리 셸리", category: "과학/책임", desc: "과학 기술의 발전과 그에 따른 인간의 윤리적 책임에 대한 질문", color: "#B0BEC5" },
+            { title: "로봇 시대, 인간의 일", author: "구본권", category: "AI/미래", desc: "인공지능 시대, 대체되지 않는 인간만의 가치는 무엇일까?", color: "#90CAF9" },
+
+            { title: "꾸뻬 씨의 행복 여행", author: "프랑수아 를로르", category: "행복/가치", desc: "진정한 행복이란 무엇일까? 전 세계를 여행하며 얻은 배움들", color: "#FFCC80" },
+
+            { title: "우아한 거짓말", author: "김려령", category: "학교폭력/가족", desc: "무심코 던진 말이 남긴 상처, 그리고 남겨진 사람들의 용서와 화해", color: "#EF9A9A" },
+            { title: "시간을 파는 상점", author: "김선영", category: "시간/철학", desc: "시간의 의미를 찾아가는 미스터리한 상점의 이야기", color: "#CE93D8" }
         ];
-        const wrapper = document.querySelector('.gallery-wrapper');
-        if (wrapper) {
-            wrapper.innerHTML = books.map(b => `
-                <div class="book-card">
-                    <div class="book-num">${b.num}</div>
-                    <div class="book-info">
-                        <h3>${b.title}</h3>
-                        <span class="author">${b.author}</span>
-                        <p>${b.desc}</p>
-                    </div>
+
+        if (!this.galleryContainer) return;
+        this.galleryContainer.innerHTML = books.map(book => `
+            <div class="book-card">
+                <div class="book-img" style="background-color: ${book.color}; display:flex; align-items:center; justify-content:center; font-size:3rem;">📖</div>
+                <div class="book-info">
+                    <span style="font-size:0.8rem; color:#888; text-transform:uppercase; letter-spacing:1px;">${book.category}</span>
+                    <h3 style="margin:5px 0;">${book.title}</h3>
+                    <p style="font-weight:bold; color:#555; font-size:0.9rem;">${book.author}</p>
+                    <p style="margin-top:10px; font-size:0.85rem; color:#777; line-height:1.4;">${book.desc}</p>
                 </div>
-            `).join('');
+            </div>
+        `).join('');
+    },
+
+    /* --- Feature: Notes (Forest of Sentences) --- */
+    addNote() {
+        const text = this.noteInput.value.trim();
+        if (!text) return;
+        this.state.notes.unshift(text); // Add to front
+        this.renderNotes();
+        this.noteInput.value = '';
+    },
+    renderNotes() {
+        if (!this.notesGrid) return;
+        this.notesGrid.innerHTML = this.state.notes.map(note => `
+            <div class="note-item">"${note}"</div>
+        `).join('');
+    },
+
+    /* --- Feature: Chat + Balance Game --- */
+    sendMessage() {
+        const text = this.chatInput.value.trim();
+        if (!text) return;
+
+        // User message
+        this.addChatBubble(text, 'user');
+        this.chatInput.value = '';
+
+        // Auto reply simulation
+        setTimeout(() => {
+            this.addChatBubble("좋은 의견이네요! 다른 친구들은 어떻게 생각할까요?", 'bot');
+        }, 1000);
+    },
+    addChatBubble(text, type) {
+        const bubble = document.createElement('div');
+        bubble.className = `bubble ${type}`;
+        bubble.innerText = text;
+        this.chatFeed.appendChild(bubble);
+        this.chatFeed.scrollTop = this.chatFeed.scrollHeight;
+    },
+    renderChat() {
+        // Load initial history
+        this.state.chatHistory.forEach(msg => this.addChatBubble(msg.text, msg.user));
+    },
+    vote(option) {
+        alert(option === 'yes' ? "⭕ '그렇다'에 한 표 행사했습니다!" : "❌ '아니다'에 한 표 행사했습니다!");
+        // Simple visual feedback
+        if (this.voteBar) {
+            this.voteBar.style.width = '62%';
+            this.voteBar.style.opacity = '1';
         }
     },
 
-    // --- Sentences ---
-    initSentences() {
-        const container = document.getElementById('notes-grid');
-        const render = () => {
-            const notes = this.db.get('notes');
-            if (notes.length === 0) {
-                container.innerHTML = `
-                    <div class="note-card accent"><p>"가장 중요한 것은 눈에 보이지 않아."</p></div>
-                    <div class="note-card"><p>"말은 생각의 껍데기에 불과해."</p></div>
-                `;
-                return;
-            }
-            container.innerHTML = notes.map(n => `<div class="note-card"><p>"${n.text}"</p></div>`).join('');
-        };
-        document.getElementById('note-add-btn').addEventListener('click', () => {
-            const input = document.getElementById('note-input');
-            if (input.value) {
-                this.db.add('notes', { text: input.value });
-                input.value = '';
-                render();
-                this.toast('문장이 수집되었습니다.');
-            }
-        });
-        render();
-    },
+    /* --- Feature: Relay Story --- */
+    addRelayLine() {
+        const line = this.relayInput.value.trim();
+        if (!line) return;
+        this.state.relayStory.push(line);
+        this.renderRelay();
+        this.relayInput.value = '';
 
-    // --- Chat ---
-    initChat() {
-        const feed = document.getElementById('chat-feed');
-        const dbChat = this.db.get('chats');
-        // Initial Dummy if empty
-        if (dbChat.length === 0) {
-            feed.innerHTML = `
-                <div class="bubble other">선의의 거짓말도 거짓말 아닐까요?</div>
-                <div class="bubble me">상황에 따라 다를 수 있다고 생각해요.</div>
-            `;
-        } else {
-            feed.innerHTML = dbChat.map(c => `<div class="bubble ${c.isMe ? 'me' : 'other'}">${c.text}</div>`).join('');
-        }
+        // Auto scroll to bottom
+        setTimeout(() => {
+            this.storyBoard.scrollTop = this.storyBoard.scrollHeight;
+        }, 100);
     },
+    renderRelay() {
+        if (!this.storyBoard) return;
+        // Keep the start line separate or part of array? 
+        // Let's just render array items except the first one if it's static in HTML
+        // Actually, let's clear and re-render all dynamic lines
 
-    // --- Letter ---
-    initLetter() {
-        document.getElementById('send-letter-btn').addEventListener('click', () => {
-            const t = document.getElementById('letter-content-area');
-            if (t.value) {
-                this.toast('편지가 우체통에 접수되었습니다.');
-                t.value = '';
-            }
+        // Get existing start text if needed, but easier to just append new divs
+        // We will clear only added lines.
+        // Simplified: Clear board and rewrite.
+
+        this.storyBoard.innerHTML = `<p class="story-start">📌 첫 문장: 어느 날, 도서관의 책 속 주인공들이 모두 현실로 튀어나왔다...</p>`;
+
+        // Render lines (skip index 0 if it's the prompt, but here our array starts with prompt in state for storage reasons? No let's just use state for user inputs)
+        // Let's assume state.relayStory has ONLY user inputs for now to avoid duplication with HTML hardcoded start.
+        // Wait, init state has one line. Let's start from index 1.
+
+        this.state.relayStory.slice(1).forEach((line, index) => {
+            const div = document.createElement('div');
+            div.className = 'story-line';
+            div.innerHTML = `${line} <span class="story-author">#익명${index + 1}</span>`;
+            this.storyBoard.appendChild(div);
         });
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => app.init());
+// Start
+document.addEventListener('DOMContentLoaded', () => {
+    app.init();
+});

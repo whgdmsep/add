@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 독서 기록 (KWL)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Pretendard:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #F8F9FA;
+            --paper-color: #ffffff;
+            --primary: #5c6bc0;
+            --text-color: #333;
+            --line-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Paper Sheet UI */
+        .sheet {
+            background: var(--paper-color);
+            width: 100%;
+            max-width: 900px;
+            padding: 50px;
+            border-radius: 4px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* Book Info Input */
+        .book-meta {
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .book-input {
+            border: none;
+            font-size: 1.5rem;
+            font-family: 'Noto Serif KR', serif;
+            width: 100%;
+            outline: none;
+            color: var(--text-color);
+        }
+
+        .book-input::placeholder {
+            color: #ccc;
+        }
+
+        /* KWL Columns */
+        .kwl-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .kwl-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kwl-column {
+            background: #fff;
+            border: 1px solid var(--line-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+        .kwl-column:focus-within {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .col-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--line-color);
+        }
+
+        /* KWL Specific Colors */
+        .col-k .col-header {
+            color: #e17055;
+        }
+
+        .col-w .col-header {
+            color: #0984e3;
+        }
+
+        .col-l .col-header {
+            color: #00b894;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            border: none;
+            resize: none;
+            font-family: 'Pretendard', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            background: transparent;
+            /* Lines effect below */
+            background-image: linear-gradient(transparent 95%, #f1f2f6 95%);
+            background-size: 100% 2rem;
+            outline: none;
+        }
+
+        .action-area {
+            text-align: right;
+            margin-top: 30px;
+        }
+
+        .save-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(92, 107, 192, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="home.html" class="back-link"><i class="fas fa-arrow-left"></i> 홈으로</a>
+
+    <header>
+        <h1>Reading Log</h1>
+        <p class="subtitle">독서 K-W-L 차트 작성하기</p>
+    </header>
+
+    <div class="sheet">
+        <div class="book-meta">
+            <i class="fas fa-book" style="color: #999; font-size: 1.2rem;"></i>
+            <input type="text" class="book-input" placeholder="읽고 있는 책 제목을 입력하세요...">
+        </div>
+
+        <div class="kwl-grid">
+            <!-- K Column -->
+            <div class="kwl-column col-k">
+                <div class="col-header">
+                    <i class="fas fa-lightbulb"></i> K (Know)
+                </div>
+                <textarea placeholder="이 주제에 대해 이미 알고 있는 것은 무엇인가요? 독서 전 경험이나 지식을 적어보세요."></textarea>
+            </div>
+
+            <!-- W Column -->
+            <div class="kwl-column col-w">
+                <div class="col-header">
+                    <i class="fas fa-question-circle"></i> W (Want)
+                </div>
+                <textarea placeholder="이 책을 통해 무엇을 알고 싶나요? 궁금한 점이나 기대하는 내용을 질문으로 만들어보세요."></textarea>
+            </div>
+
+            <!-- L Column -->
+            <div class="kwl-column col-l">
+                <div class="col-header">
+                    <i class="fas fa-check-circle"></i> L (Learned)
+                </div>
+                <textarea placeholder="책을 읽고 새롭게 알게 된 사실이나 깨달은 점은 무엇인가요?"></textarea>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="save-btn" onclick="saveLog()"><i class="fas fa-save"></i> 기록 저장하기</button>
+        </div>
+    </div>
+
+    <div id="toast">✅ 기록이 안전하게 저장되었습니다.</div>
+
+    <script>
+        function saveLog() {
+            // In a real app, save to LocalStorage or DB
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+
+            // Optional: log to console
+            const title = document.querySelector('.book-input').value;
+            console.log(`Saved log for: ${title || 'Untitled'}`);
+        }
+    </script>
+
+</body>
+
+</html>
