@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+:root {
+    --primary-orange: #FFB347;
+    --primary-green: #77DD77;
+    --primary-blue: #89CFF0;
+    --primary-red: #FF6961;
+    --bg-color: #FDFBF7;
+    --text-color: #4A4A4A;
+    --shadow-light: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+    --clay-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1), -10px -10px 20px rgba(255, 255, 255, 0.8), inset 5px 5px 15px rgba(255, 255, 255, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: url('bg_home.png') repeat center center;
+    background-size: 400px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.title-area {
+    text-align: center;
+    margin-bottom: 50px;
+    animation: bounceIn 1s;
+}
+
+h1 {
+    font-family: 'Jua', sans-serif;
+    font-size: 3rem;
+    color: #333;
+    text-shadow: 3px 3px 0px #fff, 6px 6px 0px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+p.subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    background: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+}
+
+/* --- Grid Layout --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 800px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Claymorphism Cards --- */
+.card {
+    background: #ffffff;
+    border-radius: 35px;
+    padding: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 4px solid transparent;
+    box-shadow: var(--clay-shadow);
+    overflow: hidden;
+    min-height: 280px;
+}
+
+/* Hover Effects */
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 15px 15px 30px rgba(0, 0, 0, 0.15), -15px -15px 30px rgba(255, 255, 255, 0.9);
+}
+
+.card:active {
+    transform: scale(0.95);
+}
+
+/* Card Themes */
+.card.orange {
+    border-color: var(--primary-orange);
+}
+
+.card.green {
+    border-color: var(--primary-green);
+}
+
+.card.blue {
+    border-color: var(--primary-blue);
+}
+
+.card.red {
+    border-color: var(--primary-red);
+}
+
+/* Icons (Using CSS Shapes & FontAwesome mixed) */
+.icon-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    transition: transform 0.5s;
+}
+
+.card:hover .icon-circle {
+    transform: rotate(10deg) scale(1.1);
+}
+
+.card.orange .icon-circle {
+    background: var(--primary-orange);
+}
+
+.card.green .icon-circle {
+    background: var(--primary-green);
+}
+
+.card.blue .icon-circle {
+    background: var(--primary-blue);
+}
+
+.card.red .icon-circle {
+    background: var(--primary-red);
+}
+
+/* Text */
+h2 {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+p.desc {
+    font-size: 1rem;
+    color: #888;
+    line-height: 1.4;
+    max-width: 80%;
+}
+
+/* --- Interactive Elements Inside Cards --- */
+
+/* 1. Pet Progress */
+.pet-status {
+    width: 100%;
+    margin-top: 15px;
+    background: #eee;
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pet-bar {
+    width: 40%;
+    height: 100%;
+    background: var(--primary-orange);
+    transition: width 1s;
+}
+
+/* 2. Timer */
+.timer-display {
+    font-family: 'Jua', monospace;
+    font-size: 2.5rem;
+    color: var(--primary-red);
+    margin-top: 10px;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.btn-mini {
+    padding: 5px 12px;
+    border-radius: 15px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+}
+
+.btn-mini:hover {
+    background: #ddd;
+}
+
+/* 3. Book Cover */
+.book-cover-mini {
+    width: 60px;
+    height: 80px;
+    background: var(--primary-blue);
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    transform: rotate(15deg);
+    opacity: 0.2;
+    transition: all 0.3s;
+}
+
+.card:hover .book-cover-mini {
+    bottom: 20px;
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+/* Animation */
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Footer Link to Original */
+.footer-link {
+    margin-top: 50px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.footer-link:hover {
+    color: var(--primary-blue);
+}

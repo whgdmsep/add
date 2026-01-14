@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>집중 타이머 ⏱️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFEBEE;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #D32F2F;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #C62828;
+            margin-bottom: 30px;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Pie Chart Timer using CSS Conic Gradient */
+        .pie {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#FFCDD2 var(--deg), white 0deg);
+            border: 10px solid white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-text {
+            font-size: 4rem;
+            color: #C62828;
+            z-index: 10;
+        }
+
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Jua';
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-start {
+            background: #FF5252;
+            color: white;
+            box-shadow: 0 5px 0 #D32F2F;
+        }
+
+        .btn-reset {
+            background: #fff;
+            color: #555;
+            box-shadow: 0 5px 0 #ddd;
+        }
+
+        .presets {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid #FFCDD2;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #C62828;
+            font-family: 'Jua';
+        }
+
+        .preset-btn:hover {
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="home.html" class="back-btn">← 놀이터로 돌아가기</a>
+
+    <h1>독서 집중 타이머</h1>
+
+    <div class="timer-container">
+        <div class="pie" id="pie" style="--deg: 360deg;">
+            <div class="time-text" id="display">25:00</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-start" id="startBtn">시작</button>
+        <button class="btn-reset" id="resetBtn">리셋</button>
+    </div>
+
+    <div class="presets">
+        <button class="preset-btn" onclick="setTime(10)">10분</button>
+        <button class="preset-btn" onclick="setTime(25)">25분</button>
+        <button class="preset-btn" onclick="setTime(40)">40분</button>
+    </div>
+
+    <script>
+        let duration = 25 * 60; // seconds
+        let timeLeft = duration;
+        let timerId = null;
+        let isRunning = false;
+
+        const pie = document.getElementById('pie');
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+
+        function updateView() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            display.textContent = `${m}:${s < 10 ? '0' + s : s}`;
+
+            // Calculate degrees: 360 -> 0
+            const deg = (timeLeft / duration) * 360;
+            pie.style.setProperty('--deg', `${deg}deg`);
+        }
+
+        function setTime(min) {
+            if (isRunning) return;
+            duration = min * 60;
+            timeLeft = duration;
+            updateView();
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (isRunning) {
+                // Pause
+                clearInterval(timerId);
+                isRunning = false;
+                startBtn.textContent = "계속";
+                startBtn.style.background = "#FF9800"; // Orange for pause
+            } else {
+                // Start
+                if (timeLeft <= 0) return;
+                isRunning = true;
+                startBtn.textContent = "일시정지";
+                startBtn.style.background = "#FF5252";
+
+                timerId = setInterval(() => {
+                    timeLeft--;
+                    updateView();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerId);
+                        isRunning = false;
+                        startBtn.textContent = "완료";
+                        pie.style.setProperty('--deg', `0deg`);
+                        alert("독서 시간이 끝났습니다! 고생하셨어요. 📖");
+                    }
+                }, 1000);
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            clearInterval(timerId);
+            isRunning = false;
+            timeLeft = duration;
+            updateView();
+            startBtn.textContent = "시작";
+            startBtn.style.background = "#FF5252";
+        });
+
+        updateView();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>독서 나무 키우기 🌳</title>
+    <!-- Use standard fonts matching home style -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&family=Pretendard:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #F1F8E9;
+            /* Very soft green */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: #263238;
+        }
+
+        h1 {
+            font-family: 'Noto Serif KR', serif;
+            color: #33691E;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .game-area {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(51, 105, 30, 0.1);
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .game-area:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 20px rgba(51, 105, 30, 0.15);
+        }
+
+        #tree-icon {
+            font-size: 160px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        .progress-wrapper {
+            margin-top: 50px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(51, 105, 30, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #8BC34A, #558B2F);
+            border-radius: 20px;
+            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        #level-text {
+            color: #33691E;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .instruction {
+            color: #689F38;
+            margin-top: 15px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            color: #558B2F;
+            font-size: 1rem;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Particles */
+        .leaf-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 1.2s ease-out forwards;
+            font-size: 1.5rem;
+            color: #8BC34A;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.5);
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-80px) rotate(45deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Bounce Animation */
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> 정원으로 돌아가기</a>
+
+    <h1>나무를 키워주세요</h1>
+
+    <div class="game-area" id="click-area">
+        <div id="tree-icon">🌰</div>
+    </div>
+
+    <div class="progress-wrapper">
+        <div id="level-text">Lv.1 작은 씨앗</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p class="instruction">화면을 클릭하여 물과 햇살을 주세요 💧☀️</p>
+    </div>
+
+    <script>
+        const stages = [
+            { icon: "🌰", name: "Lv.1 작은 씨앗" },
+            { icon: "🌱", name: "Lv.2 고개 든 새싹" },
+            { icon: "🌿", name: "Lv.3 자라나는 묘목" },
+            { icon: "🌳", name: "Lv.4 튼튼한 나무" },
+            { icon: "🍎", name: "Lv.Max 열매 맺은 나무" },
+        ];
+
+        // Retrieve state if you want persistence, skipping for simple demo
+        let clickCount = 0;
+        let currentStage = 0;
+        const clicksPerLevel = 20;
+
+        const treeEl = document.getElementById('tree-icon');
+        const barEl = document.getElementById('progress-bar');
+        const levelTextEl = document.getElementById('level-text');
+        const areaEl = document.getElementById('click-area');
+
+        areaEl.addEventListener('click', (e) => {
+            if (currentStage >= stages.length - 1) return;
+
+            clickCount++;
+
+            // Progress Calculation
+            let progress = (clickCount % clicksPerLevel) / clicksPerLevel * 100;
+            // Immediate visual update for progress
+            if (clickCount > 0 && clickCount % clicksPerLevel === 0) progress = 100;
+            barEl.style.width = `${progress}%`;
+
+            // Particle Effect (Leaf)
+            const p = document.createElement('div');
+            p.className = 'leaf-particle';
+            p.innerHTML = '<i class="fas fa-leaf"></i>';
+            // Randomize position slightly around click
+            const offsetX = (Math.random() - 0.5) * 40;
+            p.style.left = (e.clientX + offsetX) + 'px';
+            p.style.top = e.clientY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1200);
+
+            // Level Up Check
+            if (clickCount > 0 && clickCount % clicksPerLevel === 0) {
+                setTimeout(() => {
+                    currentStage++;
+                    if (currentStage < stages.length) {
+                        updateStage();
+                    } else {
+                        currentStage = stages.length - 1;
+                    }
+                }, 300); // Slight delay to see full bar
+            }
+        });
+
+        function updateStage() {
+            treeEl.innerText = stages[currentStage].icon;
+            levelTextEl.innerText = stages[currentStage].name;
+            barEl.style.width = '0%';
+
+            // Celebration Animation
+            treeEl.style.animation = 'none';
+            treeEl.offsetHeight;
+            treeEl.style.animation = 'bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        }
+    </script>
+</body>
+
+</html>

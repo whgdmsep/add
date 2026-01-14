@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도덕, 삶을 읽다</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <a href="#" class="logo">
+                <i class="fas fa-book-open" style="color: #e17055;"></i>
+                Ethics<span>Library</span>
+            </a>
+            <nav>
+                <button data-target="page-books">추천 도서</button>
+                <button data-target="page-notes">문장 수집</button>
+                <button data-target="page-talk">딜레마 톡</button>
+                <button data-target="page-letter">편지 쓰기</button>
+            </nav>
+
+            <!-- Link to Personal Home Activity -->
+            <a href="home.html" class="personal-btn">
+                <i class="fas fa-user-astronaut"></i> 나만의 독서 정원
+            </a>
+        </header>
+
+        <main>
+            <!-- INTRO SECTION (Default Active) -->
+            <div id="page-intro" class="page active">
+                <div class="intro-content">
+                    <h1>도덕,<br>책 속에서 길을 묻다</h1>
+                    <div class="intro-divider"></div>
+                    <p>
+                        옳고 그름, 책임과 자유, 그리고 인간다움에 대하여.<br>
+                        우리는 책 속의 인물들을 통해 삶의 답을 찾아갑니다.<br>
+                        <br>
+                        지금, 당신의 마음을 울리는 질문은 무엇인가요?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Page 1: Books -->
+            <div id="page-books" class="page">
+                <h1 class="title">Ethics Curation</h1>
+                <div class="gallery-wrapper">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <!-- Page 2: Notes -->
+            <div id="page-notes" class="page">
+                <h1 class="title">Sentence Wall</h1>
+                <div class="input-bar">
+                    <input type="text" id="note-input" placeholder="인상 깊은 문장을 기록하세요...">
+                    <button id="note-add-btn">기록하기</button>
+                </div>
+                <div id="notes-grid" class="masonry-grid"></div>
+            </div>
+
+            <!-- Page 3: Chat -->
+            <div id="page-talk" class="page" style="justify-content: center; align-items: center;">
+                <h1 class="title" style="margin-bottom: 20px;">Dilemma Talk</h1>
+                <div class="chat-container">
+                    <div id="chat-feed" class="chat-feed"></div>
+                    <div class="chat-input-area">
+                        <input type="text" placeholder="의견을 입력하세요...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 4: Letter -->
+            <div id="page-letter" class="page">
+                <h1 class="title" style="text-align: center; margin-bottom: 30px;">Dear Character</h1>
+                <div class="envelope-stage">
+                    <div class="envelope">
+                        <div class="letter-form">
+                            <textarea id="letter-content-area" placeholder="편지 내용을 작성해주세요..."></textarea>
+                            <button id="send-letter-btn"
+                                style="position: absolute; bottom: 30px; right: 30px; background: #2d3436; color: white; border: none; padding: 10px 20px; cursor: pointer;">부치기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-box"><i class="fas fa-check-circle"></i> <span>완료</span></div>
+    <script src="script.js"></script>
+</body>
+
+</html>

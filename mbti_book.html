@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>나의 도덕 가치관과 인생 책 🧭</title>
+    <!-- Modern Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&family=Pretendard:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c6bc0;
+            --bg-color: #EEF2F6;
+            --card-bg: #ffffff;
+            --text-color: #37474f;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            text-decoration: none;
+            color: #546e7a;
+            font-size: 1rem;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 600px;
+            wth: 100%;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            /* Soft shadow */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #263238;
+        }
+
+        .step-indicator {
+            font-size: 0.9rem;
+            color: #90a4ae;
+            margin-bottom: 40px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-box {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .question-box.active {
+            display: block;
+        }
+
+        .scenario-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-weight: 600;
+            word-break: keep-all;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #f5f7fa;
+            border: 2px solid transparent;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Pretendard', sans-serif;
+            color: #455a64;
+            text-align: left;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            background: #e8eaf6;
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Result Section */
+        #result-section {
+            display: none;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .book-cover-mock {
+            width: 140px;
+            height: 200px;
+            background: linear-gradient(135deg, #ddd, #eee);
+            margin: 0 auto 25px;
+            border-radius: 8px;
+            /* Classic book radius */
+            box-shadow: 5px 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+        }
+
+        .book-cover-mock::after {
+            /* Book spine highlight */
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .value-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #e8eaf6;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .rec-desc {
+            color: #546e7a;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(92, 107, 192, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> 정원으로 돌아가기</a>
+
+    <div class="container">
+
+        <!-- Intro -->
+        <div id="intro-box" class="question-box active">
+            <h1>도덕적 가치관 탐색</h1>
+            <p class="rec-desc" style="margin-bottom: 40px;">
+                복잡한 상황에서 당신은 어떤 선택을 하시나요?<br>
+                3가지 질문을 통해 당신이 중요하게 생각하는 가치를 알아보고,<br>
+                그에 어울리는 책을 추천해 드립니다.
+            </p>
+            <button class="restart-btn" onclick="startTest()">지금 시작하기</button>
+        </div>
+
+        <!-- Question 1 -->
+        <div id="q1" class="question-box">
+            <div class="step-indicator">Scenario 01</div>
+            <p class="scenario-text">
+                친구 A가 시험 부정행위를 하는 것을 우연히 보게 되었습니다.<br>
+                A는 평소 집안 사정 때문에 성적 압박을 심하게 받고 있습니다.<br>
+                당신이라면 어떻게 할까요?
+            </p>
+            <div class="options">
+                <button class="option-btn" onclick="next(1, 'justice')">
+                    1. 규칙은 규칙이다. 선생님께 사실대로 말씀드린다. (정의)
+                </button>
+                <button class="option-btn" onclick="next(1, 'empathy')">
+                    2. 친구의 사정이 딱하니까, 이번 한 번만 모른 척 넘어간다. (공감)
+                </button>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div id="q2" class="question-box">
+            <div class="step-indicator">Scenario 02</div>
+            <p class="scenario-text">
+                마을의 안전을 위해 모든 사람의 행동을 24시간 감시하는<br>
+                CCTV 시스템을 도입한다고 합니다.<br>
+                이에 대한 당신의 생각은?
+            </p>
+            <div class="options">
+                <button class="option-btn" onclick="next(2, 'safety')">
+                    1. 범죄가 사라지고 모두가 안전해질 수 있다면 찬성한다. (공동체/안전)
+                </button>
+                <button class="option-btn" onclick="next(2, 'freedom')">
+                    2. 나의 사생활과 자유가 침해되는 것은 싫다. 반대한다. (자유/권리)
+                </button>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div id="q3" class="question-box">
+            <div class="step-indicator">Scenario 03</div>
+            <p class="scenario-text">
+                길을 가다가 이름 모를 타인이 쓰러져 있는 것을 발견했습니다.<br>
+                도와주면 내 약속 시간에 늦어 큰 손해를 볼 수도 있습니다.<br>
+                당신의 선택은?
+            </p>
+            <div class="options">
+                <button class="option-btn" onclick="next(3, 'conscience')">
+                    1. 손해를 보더라도 사람을 구하는 것이 도리다. (양심/책임)
+                </button>
+                <button class="option-btn" onclick="next(3, 'pragmatic')">
+                    2. 안타깝지만 신고만 해주고 내 갈 길을 간다. (실리/현실)
+                </button>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-section">
+            <div class="step-indicator">Recommendation</div>
+            <h1 id="res-title">책 제목</h1>
+            <div class="value-badge" id="res-value">핵심 가치</div>
+
+            <div class="book-cover-mock" id="res-color">📖</div>
+
+            <p class="rec-desc" id="res-desc">설명 텍스트</p>
+
+            <button class="restart-btn" onclick="location.reload()"><i class="fas fa-redo"></i> 다시 테스트하기</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple Logic: Store last choice to determine nuance, but mostly random for demo variety if generic.
+        // Or accumulating scores. Let's accumulate 'types'.
+        /*
+           Scores mapping:
+           - justice, safety, conscience -> Type A '원칙과 정의' (Principled)
+           - empathy, freedom, pragmatic -> Type B '감성과 자유' (Humanist)
+        */
+
+        let scores = { A: 0, B: 0 };
+        // Mapping choices to types
+        const typeMap = {
+            'justice': 'A', 'safety': 'A', 'conscience': 'A',
+            'empathy': 'B', 'freedom': 'B', 'pragmatic': 'B'
+        };
+
+        function startTest() {
+            document.getElementById('intro-box').classList.remove('active');
+            document.getElementById('q1').classList.add('active');
+        }
+
+        function next(qNum, choiceKey) {
+            scores[typeMap[choiceKey]]++;
+
+            document.getElementById(`q${qNum}`).classList.remove('active');
+            if (qNum < 3) {
+                document.getElementById(`q${qNum + 1}`).classList.add('active');
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const resSection = document.getElementById('result-section');
+            resSection.style.display = 'block';
+
+            const title = document.getElementById('res-title');
+            const value = document.getElementById('res-value');
+            const desc = document.getElementById('res-desc');
+            const color = document.getElementById('res-color');
+
+            if (scores.A > scores.B) {
+                // Type A: The Guardian
+                title.innerText = "《앵무새 죽이기》";
+                value.innerText = "#정의 #양심 #용기";
+                desc.innerHTML = "당신은 <b>원칙과 정의</b>를 소중히 여기는 사람입니다.<br>편견에 맞서 양심을 지키는 변호사 핀치의 이야기를 통해<br>진정한 용기가 무엇인지 확인해보세요.";
+                color.style.background = "linear-gradient(135deg, #2c3e50, #3498db)";
+            } else {
+                // Type B: The Humanist
+                title.innerText = "《기억 전달자》";
+                value.innerText = "#감정 #선택 #자유";
+                desc.innerHTML = "당신은 <b>개인의 자유와 감정</b>을 소중히 여깁니다.<br>통제된 완벽함보다 고통스럽더라도 진실된 삶을 선택하는<br>조너스의 여정이 당신에게 깊은 울림을 줄 것입니다.";
+                color.style.background = "linear-gradient(135deg, #8e44ad, #9b59b6)";
+            }
+        }
+    </script>
+</body>
+
+</html>

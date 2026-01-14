@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>나무 이야기 심기 🌳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #F1F8E9;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #558B2F;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #33691E;
+            margin-top: 50px;
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 90%;
+            margin-top: 30px;
+        }
+
+        .story-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .story-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 5px solid #AED581;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            font-size: 1.2rem;
+        }
+
+        .story-card:active {
+            cursor: grabbing;
+            background: #DCEDC8;
+        }
+
+        .tree-area {
+            margin-top: 40px;
+            text-align: center;
+            height: 200px;
+            transition: all 0.5s;
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .tree-area.grown {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+
+        .tree-icon {
+            font-size: 100px;
+            line-height: 1;
+            display: block;
+        }
+
+        .check-btn {
+            background: #558B2F;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: 'Jua';
+            box-shadow: 0 5px 15px rgba(85, 139, 47, 0.4);
+        }
+
+        .check-btn:hover {
+            background: #33691E;
+        }
+
+        .success-msg {
+            color: #33691E;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="home.html" class="back-btn">← 놀이터로 돌아가기</a>
+    <h1>이야기 순서 맞추기</h1>
+    <p>아래 문장들을 올바른 이야기 순서대로 끌어서 맞춰보세요!</p>
+
+    <div class="game-container">
+        <ul id="story-list" class="story-list">
+            <!-- Shuffled Items -->
+            <li class="story-card" data-id="3">그러자 늑대는 입김을 불어 지푸라기 집을 날려버렸습니다.</li>
+            <li class="story-card" data-id="1">옛날 옛적에 아기 돼지 삼형제가 살고 있었습니다.</li>
+            <li class="story-card" data-id="5">결국 늑대는 굴뚝으로 들어오려다 뜨거운 솥에 빠지고 말았습니다.</li>
+            <li class="story-card" data-id="4">돼지들은 튼튼한 벽돌집을 지은 막내의 집으로 도망쳤습니다.</li>
+            <li class="story-card" data-id="2">첫째는 지푸라기로, 둘째는 나무로 집을 지었습니다.</li>
+        </ul>
+
+        <div style="text-align: center;">
+            <button class="check-btn" onclick="checkOrder()">다 심었어요!</button>
+        </div>
+    </div>
+
+    <div class="tree-area" id="tree-area">
+        <div class="success-msg" id="msg">정답입니다! 멋진 이야기 나무가 자라났어요!</div>
+        <div class="tree-icon">🌳</div>
+        <div style="color: #558B2F; margin-top: 10px;">(이야기 나무 묘목)</div>
+    </div>
+
+    <script>
+        const el = document.getElementById('story-list');
+        Sortable.create(el, { animation: 150 });
+
+        function checkOrder() {
+            const currentOrder = Array.from(el.children).map(c => c.getAttribute('data-id'));
+            const correctOrder = ["1", "2", "3", "4", "5"];
+
+            if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+                // Success
+                document.getElementById('tree-area').classList.add('grown');
+                document.getElementById('msg').style.display = 'block';
+                document.querySelector('.tree-area div:last-child').innerText = "(무럭무럭 자라난 이야기 나무)";
+                confettiEffect();
+            } else {
+                alert('순서가 조금 이상한 것 같아요. 다시 이야기 흐름을 생각해보세요!');
+            }
+        }
+
+        function confettiEffect() {
+            // Simple visual feedback
+            document.body.style.backgroundColor = "#DCEDC8";
+            setTimeout(() => document.body.style.backgroundColor = "#F1F8E9", 500);
+        }
+    </script>
+</body>
+
+</html>

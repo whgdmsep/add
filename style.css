@@ -1,0 +1,447 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Pretendard:wght@300;400;500;600&display=swap');
+
+:root {
+    --bg-overlay: rgba(255, 255, 255, 0.4);
+    --glass-white: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --text-primary: #2d3436;
+    --text-secondary: #636e72;
+    --accent-color: #e17055;
+    --accent-hover: #d63031;
+    --primary-blue: #74b9ff;
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pretendard', sans-serif;
+    color: var(--text-primary);
+    background: url('bg_light.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Header --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 0;
+    animation: fadeInDown 1s ease;
+    position: relative;
+    z-index: 100;
+}
+
+.logo {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+nav {
+    background: var(--glass-white);
+    padding: 8px 12px;
+    border-radius: 50px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+}
+
+nav button {
+    background: transparent;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+nav button:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+nav button.active {
+    background: var(--text-primary);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(45, 52, 54, 0.2);
+}
+
+/* --- Personal Activity Button (Right Side) --- */
+.personal-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 12px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 0.95rem;
+}
+
+.personal-btn i {
+    color: #00b894;
+}
+
+.personal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Main Content --- */
+main {
+    flex: 1;
+    position: relative;
+    padding-top: 20px;
+}
+
+.page {
+    display: none;
+    width: 100%;
+    height: 100%;
+    animation: fadeIn 0.8s ease;
+    flex-direction: column;
+}
+
+.page.active {
+    display: flex;
+}
+
+/* --- Intro Section Styles --- */
+#page-intro {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 80%;
+    /* Vertical opt */
+}
+
+.intro-content h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    line-height: 1.3;
+    opacity: 0;
+    animation: slideUpFade 1s 0.2s forwards;
+    background: linear-gradient(45deg, #2d3436, #636e72);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.intro-content p {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: slideUpFade 1s 0.6s forwards;
+}
+
+.intro-divider {
+    width: 60px;
+    height: 4px;
+    background: var(--accent-color);
+    margin: 40px auto;
+    opacity: 0;
+    animation: expandWidth 1s 1s forwards;
+}
+
+/* --- Menu 1: Gallery --- */
+.title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+}
+
+.gallery-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    padding: 20px 0 60px 0;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.gallery-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.book-card {
+    min-width: 320px;
+    height: 480px;
+    background: var(--glass-white);
+    border-radius: 8px;
+    margin-right: 40px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+    position: relative;
+}
+
+.book-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: var(--hover-shadow);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.book-num {
+    font-size: 4rem;
+    color: rgba(0, 0, 0, 0.05);
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-family: 'Noto Serif KR', serif;
+}
+
+.book-info h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.book-info .author {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: block;
+}
+
+/* --- Menu 2: Sentences --- */
+.masonry-grid {
+    column-count: 3;
+    column-gap: 25px;
+    padding-bottom: 50px;
+}
+
+.note-card {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    break-inside: avoid;
+    border-top: 4px solid var(--primary-blue);
+    font-family: 'Noto Serif KR', serif;
+}
+
+.note-card.accent {
+    border-top-color: var(--accent-color);
+    background: #fff5f2;
+}
+
+.input-bar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.input-bar input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    outline: none;
+    font-size: 1.1rem;
+}
+
+.input-bar button {
+    background: var(--text-primary);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* --- Menu 3: Chat --- */
+.chat-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.chat-feed {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+.bubble {
+    max-width: 70%;
+    padding: 15px 20px;
+    border-radius: 18px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    clear: both;
+}
+
+.bubble.other {
+    background: #f1f2f6;
+    float: left;
+    border-bottom-left-radius: 4px;
+}
+
+.bubble.me {
+    background: var(--text-primary);
+    color: white;
+    float: right;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-input-area {
+    padding: 20px;
+    background: #fff;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    border: 1px solid #e1e1e1;
+    padding: 15px;
+    border-radius: 30px;
+    outline: none;
+}
+
+/* --- Menu 4: Letter --- */
+.envelope-stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    perspective: 1500px;
+}
+
+.envelope {
+    width: 600px;
+    background: #fff;
+    padding: 60px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    position: relative;
+}
+
+.envelope:hover {
+    transform: rotateX(5deg) translateY(-10px);
+}
+
+.letter-form textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1rem;
+    line-height: 2.2;
+    background-image: linear-gradient(transparent 95%, #eee 95%);
+    background-size: 100% 2.2rem;
+    resize: none;
+    outline: none;
+    height: 350px;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpFade {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes expandWidth {
+    from {
+        width: 0;
+        opacity: 0;
+    }
+
+    to {
+        width: 60px;
+        opacity: 1;
+    }
+}
+
+#toast-box {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+#toast-box.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}

@@ -1,23 +1,286 @@
 <!DOCTYPE html>
 <html lang="ko">
 
-
 <head>
     <meta charset="UTF-8">
-    <title>HTML Intro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 독서 정원</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Pretendard:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #F8F9FA;
+            --text-primary: #212529;
+            --text-secondary: #868E96;
+            --card-bg: #FFFFFF;
+            --accent-1: #6C5CE7;
+            /* Soft Purple */
+            --accent-2: #00B894;
+            /* Mint Green */
+            --accent-3: #0984E3;
+            /* Calm Blue */
+            --accent-4: #E17055;
+            /* Terracotta */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        /* Header Area */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 600px;
+        }
+
+        .brand-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #495057;
+            font-weight: 300;
+        }
+
+        /* Grid Layout */
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Card Styles */
+        .menu-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Typography inside Card */
+        .category {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 85%;
+            z-index: 10;
+            margin-top: auto;
+            /* Push to bottom if needed, or stick under title */
+        }
+
+        /* Icons/Background Accents */
+        .card-icon-bg {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+            transition: transform 0.4s ease;
+        }
+
+        .menu-card:hover .card-icon-bg {
+            transform: rotate(0deg) scale(1.1);
+            opacity: 0.15;
+        }
+
+        .icon-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        /* Card Variations */
+        .card-pet .category {
+            color: var(--accent-1);
+        }
+
+        .card-pet .icon-small {
+            background: var(--accent-1);
+        }
+
+        .card-lib .category {
+            color: var(--accent-2);
+        }
+
+        .card-lib .icon-small {
+            background: var(--accent-2);
+        }
+
+        .card-mbti .category {
+            color: var(--accent-3);
+        }
+
+        .card-mbti .icon-small {
+            background: var(--accent-3);
+        }
+
+        .card-timer .category {
+            color: var(--accent-4);
+        }
+
+        .card-timer .icon-small {
+            background: var(--accent-4);
+        }
+
+        /* Footer Navigation */
+        .back-link {
+            margin-top: 50px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .menu-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>학교도서관</h1>
+    <header>
+        <span class="brand-label">Student Reading Dashboard</span>
+        <h1>나만의 독서 정원</h1>
+        <p class="subtitle">나의 독서 기록을 성장시키고 관리하는 공간</p>
+    </header>
 
-<p> "학교도서관"이라 함은 고등학교 이하의 각급 학교(초등교육기관, 중등교육기관)에서 교사와 학생, 직원에게 도서관서비스를 제공하는 것을 주된 목적으로 하는 도서관을 말한다(도서관법 제2조 제6호). </p>
+    <div class="menu-container">
+        <!-- Menu 1: Tree -->
+        <a href="Egg_game.html" class="menu-card card-pet">
+            <div class="icon-small"><i class="fas fa-tree"></i></div>
+            <span class="category">Gamification</span>
+            <div class="card-title">독서 나무 키우기</div>
+            <div class="card-desc">독서 에너지로 나무를 성장시키세요. 꾸준함이 숲을 이룹니다.</div>
+            <i class="fas fa-seedling card-icon-bg"></i>
+        </a>
 
-<p>관련 법률로 학교도서관진흥법이 있다.</p>
+        <!-- Menu 2: Library -->
+        <a href="my_library.html" class="menu-card card-lib">
+            <div class="icon-small"><i class="fas fa-book"></i></div>
+            <span class="category">Archive</span>
+            <div class="card-title">나의 서재</div>
+            <div class="card-desc">읽은 책들을 기록하고 나만의 디지털 서재를 완성해보세요.</div>
+            <i class="fas fa-book-open card-icon-bg"></i>
+        </a>
 
+        <!-- Menu 3: MBTI -->
+        <a href="mbti_book.html" class="menu-card card-mbti">
+            <div class="icon-small"><i class="fas fa-compass"></i></div>
+            <span class="category">Curation</span>
+            <div class="card-title">도덕 가치관 탐색</div>
+            <div class="card-desc">딜레마 상황 속 나의 선택을 통해 맞춤형 인생 책을 찾아보세요.</div>
+            <i class="fas fa-lightbulb card-icon-bg"></i>
+        </a>
+
+        <!-- Menu 4: Timer -->
+        <a href="time_timer.html" class="menu-card card-timer">
+            <div class="icon-small"><i class="fas fa-stopwatch"></i></div>
+            <span class="category">Productivity</span>
+            <div class="card-title">집중 타이머</div>
+            <div class="card-desc">몰입의 시간을 시각적으로 관리하며 효능감을 높이세요.</div>
+            <i class="fas fa-hourglass-half card-icon-bg"></i>
+        </a>
+    </div>
+
+    <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> 도덕 교과 수업 메인으로 돌아가기
+    </a>
+
+    <!-- Footer Removed for cleaner look -->
 
 </body>
 
-
 </html>
-
